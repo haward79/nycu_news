@@ -34,6 +34,9 @@ Please change 'user@example.com' and 'sender@example.com' to the correct mail se
 
 
 # Changelog
+- 02 / 19 2022
+  - Fix a bug: Catch exception for failure of the website.
+  
 - 02 / 18 2022
   - First commit.
   - Program is ready to use.

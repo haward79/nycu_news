@@ -61,71 +61,74 @@ def fetchNews():
         url = 'https://infonews.nycu.edu.tw/index.php?SuperType=2&action=more&categoryid=all&pagekey=' + str(pageNo)
         sourceCode = requests.get(url, headers={"User-Agent": "Mozilla/5.0 (X11; Linux x86_64; rv:98.0) Gecko/20100101 Firefox/98.0"}).content
         sourceCode.decode('big5')
-        rows = BeautifulSoup(sourceCode, 'html.parser').find('div', {'id': 'layout_more'}).findAll('tr')
-        rowsLength = len(rows)
+        soup = BeautifulSoup(sourceCode, 'html.parser').find('div', {'id': 'layout_more'})
 
-        for i in range(rowsLength):
-            row = rows[i]
-            
-            if row.find('img', {'class': 'style1'}) != None:
-                category = ''
-                title = ''
-                link = ''
-                dateStart = ''
-                dateEnding = ''
-                publisher = ''
+        if soup != None:
+            rows = soup.findAll('tr')
+            rowsLength = len(rows)
 
-                # Fetch category.
-                category = get_categoryName(row.find('img', {'class': 'style1'})['src'])
+            for i in range(rowsLength):
+                row = rows[i]
                 
-                # Fetch title and link.
-                element = row.find('td', {'class': 'style2'})
+                if row.find('img', {'class': 'style1'}) != None:
+                    category = ''
+                    title = ''
+                    link = ''
+                    dateStart = ''
+                    dateEnding = ''
+                    publisher = ''
 
-                if element != None:
-                    element = element.find('a')
-
-                    if element != None:
-                        title = element.contents[0]
-
-                        link = element['href']
-                        link = 'https://infonews.nycu.edu.tw/' + link
-
-                # Fetch date.
-                if i + 1 < rowsLength:
-                    element = rows[i+1].find('td', {'class': 'style4'})
+                    # Fetch category.
+                    category = get_categoryName(row.find('img', {'class': 'style1'})['src'])
+                    
+                    # Fetch title and link.
+                    element = row.find('td', {'class': 'style2'})
 
                     if element != None:
-                        date = element.contents[0]
-                        dateSepIndex = date.find('-')
+                        element = element.find('a')
 
-                        if dateSepIndex != -1:
-                            dateStart = date[:dateSepIndex]
-                            dateStart = datetime.strptime(dateStart, '%Y/%m/%d')
-                            dateStartStr = dateStart.strftime('%Y %m.%d')
+                        if element != None:
+                            title = element.contents[0]
 
-                            dateEnding = date[dateSepIndex+1:]
-                            dateEnding = datetime.strptime(dateEnding, '%Y/%m/%d')
-                            dateEndingStr = dateEnding.strftime('%Y %m.%d')
+                            link = element['href']
+                            link = 'https://infonews.nycu.edu.tw/' + link
 
-                # Fetch publisher.
-                if i + 2 < rowsLength:
-                    element = rows[i+2].find('td', {'class': 'style4'})
+                    # Fetch date.
+                    if i + 1 < rowsLength:
+                        element = rows[i+1].find('td', {'class': 'style4'})
 
-                    if element != None:
-                        publisher = element.contents[0]
+                        if element != None:
+                            date = element.contents[0]
+                            dateSepIndex = date.find('-')
 
-                # Check start date.
-                if dateStartStr == yesterday:
-                    news.append({
-                        'category': category,
-                        'title': title,
-                        'link': link,
-                        'dateStart': dateStartStr,
-                        'dateEnding': dateEndingStr,
-                        'publisher': publisher
-                    })
+                            if dateSepIndex != -1:
+                                dateStart = date[:dateSepIndex]
+                                dateStart = datetime.strptime(dateStart, '%Y/%m/%d')
+                                dateStartStr = dateStart.strftime('%Y %m.%d')
 
-        pageNo += 1
+                                dateEnding = date[dateSepIndex+1:]
+                                dateEnding = datetime.strptime(dateEnding, '%Y/%m/%d')
+                                dateEndingStr = dateEnding.strftime('%Y %m.%d')
+
+                    # Fetch publisher.
+                    if i + 2 < rowsLength:
+                        element = rows[i+2].find('td', {'class': 'style4'})
+
+                        if element != None:
+                            publisher = element.contents[0]
+
+                    # Check start date.
+                    if dateStartStr == yesterday:
+                        news.append({
+                            'category': category,
+                            'title': title,
+                            'link': link,
+                            'dateStart': dateStartStr,
+                            'dateEnding': dateEndingStr,
+                            'publisher': publisher
+                        })
+
+            pageNo += 1
 
     return news
 
