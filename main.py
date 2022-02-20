@@ -215,7 +215,7 @@ def fetchActivity():
 
 def sendMail(news, activities):
 
-    if len(news) > 0:
+    if len(news) > 0 or len(activities) > 0:
         mailContent = """
         <html>
             <body>
