@@ -34,6 +34,9 @@ Please change 'user@example.com' and 'sender@example.com' to the correct mail se
 
 
 # Changelog
+- 04 / 21 2022
+  - Fix a bug: Decode type changed from big5 to cp950.
+
 - 02 / 20 2022
   - Fix a bug: Send mail even if there is no news.
   

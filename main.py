@@ -60,7 +60,7 @@ def fetchNews():
     while pageNo <= 10:
         url = 'https://infonews.nycu.edu.tw/index.php?SuperType=2&action=more&categoryid=all&pagekey=' + str(pageNo)
         sourceCode = requests.get(url, headers={"User-Agent": "Mozilla/5.0 (X11; Linux x86_64; rv:98.0) Gecko/20100101 Firefox/98.0"}).content
-        sourceCode.decode('big5')
+        sourceCode.decode('cp950')
         soup = BeautifulSoup(sourceCode, 'html.parser').find('div', {'id': 'layout_more'})
 
         if soup != None:
