@@ -17,6 +17,9 @@ categoryBgcolorClass = {
     '其他': 'bg8'
 }
 
+mail_sender = 'sender@example.com'
+mail_receiver = 'user@example.com'
+
 
 def get_categoryName(imageUrl):
 
@@ -60,7 +63,12 @@ def fetchNews():
     while pageNo <= 10:
         url = 'https://infonews.nycu.edu.tw/index.php?SuperType=2&action=more&categoryid=all&pagekey=' + str(pageNo)
         sourceCode = requests.get(url, headers={"User-Agent": "Mozilla/5.0 (X11; Linux x86_64; rv:98.0) Gecko/20100101 Firefox/98.0"}).content
-        sourceCode.decode('cp950')
+        
+        try:
+            sourceCode.decode('cp950')
+        except UnicodeDecodeError:
+            return 'Failed to decode ACTIVITY!'
+
         soup = BeautifulSoup(sourceCode, 'html.parser').find('div', {'id': 'layout_more'})
 
         if soup != None:
@@ -143,7 +151,12 @@ def fetchActivity():
     while pageNo <= 10:
         url = 'https://infonews.nycu.edu.tw/index.php?SuperType=1&action=more&categoryid=all&pagekey=' + str(pageNo)
         sourceCode = requests.get(url, headers={"User-Agent": "Mozilla/5.0 (X11; Linux x86_64; rv:98.0) Gecko/20100101 Firefox/98.0"}).content
-        sourceCode.decode('big5')
+
+        try:
+            sourceCode.decode('cp950')
+        except UnicodeDecodeError:
+            return 'Failed to decode ACTIVITY!'
+
         rows = BeautifulSoup(sourceCode, 'html.parser').find('div', {'id': 'layout_more'}).findAll('tr')
         rowsLength = len(rows)
 
@@ -215,7 +228,26 @@ def fetchActivity():
 
 def sendMail(news, activities):
 
-    if len(news) > 0 or len(activities) > 0:
+    if (type(news) is str) or (type(activities) is str):
+        msg = ''
+
+        if type(news) is str:
+            msg += news + '<br />'
+
+        if type(activities) is str:
+            msg += activities + '<br />'
+
+        mail = EmailMessage()
+        mail.set_content(msg, subtype='html')
+        mail['To'] = mail_receiver
+        mail['From'] = mail_sender
+        mail['Subject'] = '[ERROR] 交大公告與活動推播 (僅蒐集昨天發布的訊息)'
+
+        mailServer = smtplib.SMTP('localhost')
+        mailServer.send_message(mail)
+        mailServer.quit()
+
+    elif len(news) > 0 or len(activities) > 0:
         mailContent = """
         <html>
             <body>
@@ -391,8 +423,8 @@ def sendMail(news, activities):
 
         mail = EmailMessage()
         mail.set_content(mailContent, subtype='html')
-        mail['To'] = 'user@example.com'
-        mail['From'] = 'sender@example.com'
+        mail['To'] = mail_receiver
+        mail['From'] = mail_sender
         mail['Subject'] = '交大公告與活動推播 (僅蒐集昨天發布的訊息)'
 
         mailServer = smtplib.SMTP('localhost')
@@ -404,4 +436,3 @@ news = fetchNews()
 activities = fetchActivity()
 
 sendMail(news, activities)
-

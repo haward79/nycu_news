@@ -27,13 +27,16 @@ Example config:
 ## Change mail info
 Use text editor to open main.py and edit the following code:
 ```
-mail['To'] = 'user@example.com'
-mail['From'] = 'sender@example.com'
+mail_sender = 'sender@example.com'
+mail_receiver = 'user@example.com'
 ```
 Please change 'user@example.com' and 'sender@example.com' to the correct mail sender and receiver.
 
 
 # Changelog
+- 05 / 26 2022
+  - Fix a bug: Decode type changed from big5 to cp950.
+
 - 04 / 21 2022
   - Fix a bug: Decode type changed from big5 to cp950.
 
