@@ -34,6 +34,9 @@ Please change 'user@example.com' and 'sender@example.com' to the correct mail se
 
 
 # Changelog
+- 09 / 24 2022
+  - Modify error handling method. Error messages is included to the mail content.
+
 - 05 / 26 2022
   - Fix a bug: Decode type changed from big5 to cp950.
 
